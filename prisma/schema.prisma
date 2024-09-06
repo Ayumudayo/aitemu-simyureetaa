@@ -1,0 +1,72 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          Int       @id @default(autoincrement())
+  username    String    @unique
+  password    String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  characters  Character[] // 1:N 관계, 유저는 여러 캐릭터를 가질 수 있음
+}
+
+model Character {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  health      Int      @default(500)
+  power       Int      @default(100)
+  money       Int      @default(10000)
+  userId      Int      // 유저 테이블을 참조하는 외래키
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade) 
+  inventory   Inventory[] // 1:N 관계, 캐릭터는 여러 개의 인벤토리 아이템을 가질 수 있음
+  equippedItems EquippedItem[] // 1:N 관계, 캐릭터는 여러 개의 장착 아이템을 가질 수 있음
+}
+
+model Item {
+  id          Int      @id @default(autoincrement())
+  itemCode    Int      @unique
+  itemName    String
+  itemStat    Json     // JSON 형식으로 스탯 정보를 저장
+  itemPrice   Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  inventory   Inventory[]   // 1:N 관계, 여러 인벤토리에 있을 수 있음
+  equippedItems EquippedItem[] // 1:N 관계, 여러 캐릭터에 장착될 수 있음
+}
+
+model Inventory {
+  id          Int      @id @default(autoincrement())
+  characterId Int      // 캐릭터 테이블을 참조하는 외래키
+  itemId      Int      // 아이템 테이블을 참조하는 외래키
+  count       Int      @default(1)  // 인벤토리 내 아이템 개수
+  createdAt   DateTime @default(now())
+  
+  character   Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  item        Item      @relation(fields: [itemId], references: [id], onDelete: Cascade)
+}
+
+model EquippedItem {
+  id          Int      @id @default(autoincrement())
+  characterId Int      // 캐릭터 테이블을 참조하는 외래키
+  itemId      Int      // 아이템 테이블을 참조하는 외래키
+  createdAt   DateTime @default(now())
+
+  character   Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  item        Item      @relation(fields: [itemId], references: [id], onDelete: Cascade)
+}
