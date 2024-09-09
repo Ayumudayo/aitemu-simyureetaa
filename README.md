@@ -75,6 +75,14 @@
      }
      ```
 
+   - **Response**:
+     ```json
+     {
+       "id": "int",
+       "username": "string"
+     }
+     ```
+
 2. **로그인 API**
 
    - **Endpoint**: `POST /api/login`
@@ -103,13 +111,37 @@
      }
      ```
 
+   - **Response**:
+     ```json
+     {
+       "characterId": "int"
+     }
+     ```
+
 4. **캐릭터 삭제 API**
 
    - **Endpoint**: `DELETE /api/characters/:id`
 
+   - **Response**:
+     ```json
+     {
+       "message": "Character deleted successfully"
+     }
+     ```
+
 5. **캐릭터 상세 조회 API**
 
    - **Endpoint**: `GET /api/characters/:id`
+
+   - **Response**:
+     ```json
+     {
+       "name": "string",
+       "health": "int",
+       "power": "int",
+       "money": "int" (If current user owns the character)
+     }
+     ```
 
 6. **아이템 생성 API**
 
@@ -117,13 +149,26 @@
    - **Request Body**:
      ```json
      {
-       "item_code": 1,
+       "item_code": "int",
        "item_name": "string",
        "item_stat": {
-         "health": 10,
-         "power": 5
+         "health": "int",
+         "power": "int"
        },
-       "item_price": 100
+       "item_price": "int"
+     }
+     ```
+
+   - **Response**:
+     ```json
+     {
+       "itemCode": "int",
+       "itemName": "string",
+       "itemStat": {
+         "health": "int",
+         "power": "int"
+       },
+       "itemPrice": "int"
      }
      ```
 
@@ -135,7 +180,18 @@
      {
        "item_name": "string",
        "item_stat": {
-         "health": 15
+         "health": "int"
+       }
+     }
+     ```
+
+   - **Response**:
+     ```json
+     {
+       "itemCode": "int",
+       "itemName": "string",
+       "itemStat": {
+         "health": "int"
        }
      }
      ```
@@ -144,9 +200,32 @@
 
    - **Endpoint**: `GET /api/items`
 
+   - **Response**:
+     ```json
+     [
+       {
+         "itemCode": "int",
+         "itemName": "string",
+         "itemPrice": "int"
+       }
+     ]
+     ```
+
 9. **아이템 상세 조회 API**
 
    - **Endpoint**: `GET /api/items/:code`
+   - **Response**:
+     ```json
+     {
+       "itemCode": "int",
+       "itemName": "string",
+       "itemStat": {
+         "attack": "int",
+         "defense": "int"
+       },
+       "itemPrice": "int"
+     }
+     ```
 
 10. **아이템 구매 API** (JWT 인증 필요)
 
@@ -154,25 +233,70 @@
     - **Request Body**:
       ```json
       {
-        "item_code": 1,
-        "quantity": 1
+        "itemsToPurchase": [
+          { "itemCode": "int", "count": "int" }
+        ]
+      }
+      ```
+
+    - **Response**:
+      ```json
+      {
+        "message": "Items purchased successfully"
       }
       ```
 
 11. **아이템 판매 API** (JWT 인증 필요)
 
-    - **Endpoint**: `POST /api/characters/:id/purchase`
+    - **Endpoint**: `POST /api/characters/:id/sell`
     - **Request Body**:
       ```json
       {
-        "item_code": 1,
-        "quantity": 1
+        "itemsToSell": [
+          { "itemCode": "int", "count": "int" }
+        ]
+      }
+      ```
+
+    - **Response**:
+      ```json
+      {
+        "message": "Items sold successfully"
       }
       ```
 
 12. **인벤토리 내 아이템 조회 API** (JWT 인증 필요)
 
-13. **장착한 아이템 목록 조회**
+    - **Endpoint**: `POST /api/characters/:id/getinv`
+
+    - **Response**:
+      ```json
+      {
+        "inventory": [
+          {
+            "itemCode": "int",
+            "itemName": "string",
+            "count": "int"
+          }
+        ]
+      }
+      ```
+
+13. **장착한 아이템 목록 조회 API** (JWT 인증 필요)
+
+    - **Endpoint**: `POST /api/characters/:id/getequip`
+
+    - **Response**:
+      ```json
+      {
+        "equippedItems": [
+          {
+            "itemCode": "int",
+            "itemName": "string"
+          }
+        ]
+      }
+      ```
 
 14. **아이템 장착 API** (JWT 인증 필요)
 
@@ -180,30 +304,44 @@
     - **Request Body**:
       ```json
       {
-        "item_code": 1
+        "itemCode": "int"
+      }
+      ```
+
+    - **Response**:
+      ```json
+      {
+        "message": "Item equipped successfully"
       }
       ```
 
 15. **아이템 탈착 API** (JWT 인증 필요)
 
-    - **Endpoint**: `POST /api/characters/:id/equip`
+    - **Endpoint**: `POST /api/characters/:id/unequip`
     - **Request Body**:
       ```json
       {
-        "item_code": 1
+        "itemCode": "int"
+      }
+      ```
+
+    - **Response**:
+      ```json
+      {
+        "message": "Item unequipped successfully"
       }
       ```
 
 16. **게임 머니 추가 API** (JWT 인증 필요)
 
     - **Endpoint**: `POST /api/characters/:id/money`
-    - **Request Body**:
+
+    - **Response**:
       ```json
       {
-        "amount": 1000
+        "money": "int"
       }
       ```
-
 
 
 # 질답
@@ -253,37 +391,32 @@
         - **사용 상황**:
          - 리소스 생성 성공 시 (예: POST 요청으로 새로운 캐릭터나 아이템을 생성할 때).
 
-    3. **204 No Content**
-        - **의미**: 요청이 성공적으로 처리되었으나, 응답할 콘텐츠가 없음을 나타냅니다.
-        - **사용 상황**:
-            - 리소스 삭제 성공 시 (예: DELETE 요청으로 캐릭터나 아이템을 삭제할 때).
-
-    4. **400 Bad Request**
+    3. **400 Bad Request**
         - **의미**: 클라이언트의 요청이 잘못되어 서버가 이를 이해하지 못하거나 처리할 수 없음을 나타냅니다.
         - **사용 상황**:
             - 요청 데이터의 형식이 올바르지 않거나 필수 정보가 누락된 경우 (예: 잘못된 로그인 데이터로 인한 요청).
 
-    5. **401 Unauthorized**
+    4. **401 Unauthorized**
         - **의미**: 요청이 인증되지 않았거나, 인증에 실패했음을 나타냅니다.
         - **사용 상황**:
             - 인증이 필요한 요청에서 유효하지 않은 또는 누락된 JWT를 제공한 경우 (예: JWT 검증 실패 시).
 
-    6. **403 Forbidden**
+    5. **403 Forbidden**
         - **의미**: 인증되었으나, 요청된 리소스에 접근할 권한이 없음을 나타냅니다.
         - **사용 상황**:
             - 인증된 사용자가 다른 사용자의 리소스에 접근하려 할 때 (예: 다른 사용자의 캐릭터를 삭제하려 할 때).
 
-    7. **404 Not Found**
+    6. **404 Not Found**
         - **의미**: 요청한 리소스를 서버에서 찾을 수 없음을 나타냅니다.
         - **사용 상황**:
             - 존재하지 않는 캐릭터나 아이템을 조회하려 할 때.
 
-    8. **409 Conflict**
+    7. **409 Conflict**
         - **의미**: 요청이 현재 서버의 상태와 충돌하여 처리할 수 없음을 나타냅니다.
         - **사용 상황**:
             - 중복된 데이터가 제출된 경우 (예: 이미 존재하는 사용자 이름으로 회원가입을 시도할 때).
 
-    9. **500 Internal Server Error**
+    8. **500 Internal Server Error**
         - **의미**: 서버가 예기치 못한 상황으로 요청을 처리할 수 없음을 나타냅니다.
         - **사용 상황**:
             - 서버 내부에서 발생한 예외나 오류로 인해 요청 처리에 실패한 경우.
