@@ -45,7 +45,7 @@ export const signup = async (req, res) => {
     data: { username, password: hashedPassword },
   });
 
-  res.json({ id: user.id, username: user.username });
+  res.status(201).json({ id: user.id, username: user.username });
 };
 
 export const login = async (req, res) => {
@@ -65,5 +65,5 @@ export const login = async (req, res) => {
     expiresIn: "1d",
   });
 
-  res.json({ token });
+  res.status(200).json({ token });
 };

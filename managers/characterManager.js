@@ -24,7 +24,7 @@ export const createCharacter = async (req, res) => {
     },
   });
 
-  res.json(character.id);
+  res.status(201).json(character.id);
 };
 
 // 캐릭터 삭제
@@ -43,7 +43,7 @@ export const deleteCharacter = async (req, res) => {
   }
 
   await prisma.character.delete({ where: { id: parseInt(characterId) } });
-  res.json({ message: "Character deleted successfully" });
+  res.status(200).json({ message: "Character deleted successfully" });
 };
 
 // 캐릭터 상세 조회
@@ -84,7 +84,7 @@ export const getCharacterDetails = async (req, res) => {
   }
   delete character.userId;
 
-  res.json(character);
+  res.status(200).json(character);
 };
 
 export const getInventory = async (req, res) => {
@@ -105,7 +105,7 @@ export const getInventory = async (req, res) => {
     return res.status(403).json({ error: "Unauthorized or Character not found" });
   }
   delete character.userId;
-  res.json(character);
+  res.status(200).json(character);
 };
 
 // 장착 중 아이템 조회
@@ -125,7 +125,7 @@ export const getCurrentEquipment = async (req, res) => {
     return res.status(404).json({ error: "Character not found" });
   }
 
-  res.json(character);
+  res.status(200).json(character);
 };
 
 // 아이템 장착
@@ -191,7 +191,7 @@ export const equipItem = async (req, res) => {
     },
   });
 
-  res.json({ message: "Item equipped successfully" });
+  res.status(200).json({ message: "Item equipped successfully" });
 };
 
 // 아이템 탈착
@@ -270,7 +270,7 @@ export const unequipItem = async (req, res) => {
     },
   });
 
-  res.json({ message: "Item unequipped successfully" });
+  res.status(200).json({ message: "Item unequipped successfully" });
 };
 
 // 캐릭터의 게임 머니를 증가시키는 함수
@@ -296,5 +296,5 @@ export const doMining = async (req, res) => {
     data: { money: character.money + 100 },
   });
 
-  res.json({ money: updatedCharacter.money });
+  res.status(200).json({ money: updatedCharacter.money });
 };

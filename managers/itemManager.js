@@ -23,7 +23,7 @@ export const createItem = async (req, res) => {
     },
   });
 
-  res.json(item);
+  res.status(201).json(item);
 };
 
 // 아이템 목록 조회
@@ -35,7 +35,7 @@ export const getItems = async (req, res) => {
       itemPrice: true,
     },
   });
-  res.json(items);
+  res.status(200).json(items);
 };
 
 // 아이템 상세 조회
@@ -56,7 +56,7 @@ export const getItemById = async (req, res) => {
     return res.status(404).json({ error: "Item not found" });
   }
 
-  res.json(item);
+  res.status(200).json(item);
 };
 
 // 아이템 수정
@@ -72,7 +72,7 @@ export const updateItem = async (req, res) => {
     },
   });
 
-  res.json(updatedItem);
+  res.status(200).json(updatedItem);
 };
 
 // 아이템 구입
@@ -147,7 +147,7 @@ export const purchaseItem = async (req, res) => {
       });
     });
 
-    res.json({ message: "Items purchased successfully" });
+    res.status(200).json({ message: "Items purchased successfully" });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
@@ -218,7 +218,7 @@ export const sellItem = async (req, res) => {
       });
     });
 
-    res.json({ message: "Items sold successfully" });
+    res.status(200).json({ message: "Items sold successfully" });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
