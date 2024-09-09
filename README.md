@@ -1,3 +1,213 @@
+# 아이템 시뮬레이터
+
+## 개요
+
+이 프로젝트는 Node.js와 Express.js를 사용하여 게임 아이템 시뮬레이터 서비스를 구현하는 과제입니다. 이 서비스는 사용자가 자신의 게임 아이템과 다른 사용자들의 아이템을 관리하고 비교할 수 있는 기능을 제공합니다. 또한, 사용자가 게임 아이템을 시뮬레이션하여 어떤 아이템이 능력치를 향상시킬 수 있는지 예측할 수 있습니다.
+
+## 기술 스택
+
+- **Node.js**: 서버 사이드 자바스크립트 실행 환경
+- **Express.js**: Node.js 웹 애플리케이션 프레임워크
+- **MySQL**: 관계형 데이터베이스 (Prisma를 통해 사용)
+- **JWT**: JSON Web Token을 사용한 인증
+- **AWS EC2**: 배포 플랫폼
+
+## 프로젝트 설치 및 실행
+
+### 요구 사항
+
+- Node.js
+- npm
+- MySQL
+
+### 설치
+
+1. **레포지토리 클론**
+
+   ```bash
+   git clone https://github.com/Ayumudayo/aitemu-simyureetaa.git
+   cd aitemu-simyureetaa
+   ```
+
+2. **의존성 설치**
+
+   ```bash
+   npm install
+   ```
+
+3. **환경 변수 설정**
+
+   `.env` 파일을 생성하고, 아래와 같은 환경 변수를 설정합니다.
+
+   ```plaintext
+   PORT=3000
+   JWT_SECRET=your_jwt_secret
+   DB_HOST=your_database_host
+   DB_USER=your_database_user
+   DB_PASS=your_database_password
+   DB_NAME=your_database_name
+   ```
+
+4. **서버 실행**
+
+   ```bash
+   npm start
+   ```
+
+## API 문서
+
+### 인증 미들웨어
+
+- **JWT 인증**: 모든 인증이 필요한 API는 `authorization` 헤더를 통해 Bearer 토큰을 사용합니다.
+
+### 엔드포인트
+
+1. **회원가입 API**
+
+   - **Endpoint**: `POST /api/register`
+   - **Request Body**:
+     ```json
+     {
+       "username": "string",
+       "password": "string",
+       "passwordConfirm": "string",
+       "name": "string"
+     }
+     ```
+
+2. **로그인 API**
+
+   - **Endpoint**: `POST /api/login`
+   - **Request Body**:
+     ```json
+     {
+       "username": "string",
+       "password": "string"
+     }
+     ```
+
+   - **Response**:
+     ```json
+     {
+       "token": "jwt-token"
+     }
+     ```
+
+3. **캐릭터 생성 API**
+
+   - **Endpoint**: `POST /api/characters`
+   - **Request Body**:
+     ```json
+     {
+       "name": "string"
+     }
+     ```
+
+4. **캐릭터 삭제 API**
+
+   - **Endpoint**: `DELETE /api/characters/:id`
+
+5. **캐릭터 상세 조회 API**
+
+   - **Endpoint**: `GET /api/characters/:id`
+
+6. **아이템 생성 API**
+
+   - **Endpoint**: `POST /api/items`
+   - **Request Body**:
+     ```json
+     {
+       "item_code": 1,
+       "item_name": "string",
+       "item_stat": {
+         "health": 10,
+         "power": 5
+       },
+       "item_price": 100
+     }
+     ```
+
+7. **아이템 수정 API**
+
+   - **Endpoint**: `PATCH /api/items/:code`
+   - **Request Body**:
+     ```json
+     {
+       "item_name": "string",
+       "item_stat": {
+         "health": 15
+       }
+     }
+     ```
+
+8. **아이템 목록 조회 API**
+
+   - **Endpoint**: `GET /api/items`
+
+9. **아이템 상세 조회 API**
+
+   - **Endpoint**: `GET /api/items/:code`
+
+10. **아이템 구매 API** (JWT 인증 필요)
+
+    - **Endpoint**: `POST /api/characters/:id/purchase`
+    - **Request Body**:
+      ```json
+      {
+        "item_code": 1,
+        "quantity": 1
+      }
+      ```
+
+11. **아이템 판매 API** (JWT 인증 필요)
+
+    - **Endpoint**: `POST /api/characters/:id/purchase`
+    - **Request Body**:
+      ```json
+      {
+        "item_code": 1,
+        "quantity": 1
+      }
+      ```
+
+12. **인벤토리 내 아이템 조회 API** (JWT 인증 필요)
+
+13. **장착한 아이템 목록 조회**
+
+14. **아이템 장착 API** (JWT 인증 필요)
+
+    - **Endpoint**: `POST /api/characters/:id/equip`
+    - **Request Body**:
+      ```json
+      {
+        "item_code": 1
+      }
+      ```
+
+15. **아이템 탈착 API** (JWT 인증 필요)
+
+    - **Endpoint**: `POST /api/characters/:id/equip`
+    - **Request Body**:
+      ```json
+      {
+        "item_code": 1
+      }
+      ```
+
+16. **게임 머니 추가 API** (JWT 인증 필요)
+
+    - **Endpoint**: `POST /api/characters/:id/money`
+    - **Request Body**:
+      ```json
+      {
+        "amount": 1000
+      }
+      ```
+
+
+
+
+
 1. **암호화 방식**
     - 비밀번호를 DB에 저장할 때 Hash를 이용했는데, Hash는 단방향 암호화와 양방향 암호화 중 어떤 암호화 방식에 해당할까요?
         - 해싱은 원본 데이터로 복구가 불가능하기 때문에 단방향 암호화 입니다.

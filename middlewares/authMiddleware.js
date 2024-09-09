@@ -4,9 +4,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 export const authenticateToken = (req, res, next) => {
-  console.log(req.headers["authorization"]);
   const token = req.headers["authorization"].split(" ");
-  console.log(token);
 
   if (!token) return res.status(401).json({ error: "Token not found" });
   if (token[0] !== "Bearer")
