@@ -51,17 +51,17 @@ export const deleteCharacter = async (req, res) => {
 // 내 캐릭터일 시 돈까지 조회
 export const getCharacterDetails = async (req, res) => {
   const { characterId } = req.params;
-  const token = req.headers["authorization"].split(" ");
-  let currentUserId;
+  const authHeader = req.headers["authorization"];
+  let currentUserId = -1;
 
-  if (!token)
-  if (token[0] !== "Bearer")
-    currentUserId = -1;
-
-  jwt.verify(token[1], process.env.JWT_SECRET, (err, user) => {
-    if (err) currentUserId = -1;
-    currentUserId = user.userId;
-  });
+  if (!authHeader || authHeader.slice(0, 7) !== "Bearer ") currentUserId = -1;
+  else {
+    const token = authHeader.slice(7);
+    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+      if (err) currentUserId = -1;
+      else currentUserId = user.userId;
+    });
+  }
 
   const character = await prisma.character.findUnique({
     where: { id: parseInt(characterId) },
@@ -102,7 +102,9 @@ export const getInventory = async (req, res) => {
   });
 
   if (!character || character.userId !== currentUserId) {
-    return res.status(403).json({ error: "Unauthorized or Character not found" });
+    return res
+      .status(403)
+      .json({ error: "Unauthorized or Character not found" });
   }
   delete character.userId;
   res.status(200).json(character);
@@ -142,7 +144,9 @@ export const equipItem = async (req, res) => {
   });
 
   if (!character || character.userId !== req.user.userId) {
-    return res.status(403).json({ error: "Unauthorized or Character not found" });
+    return res
+      .status(403)
+      .json({ error: "Unauthorized or Character not found" });
   }
 
   const itemInInventory = character.inventory.find(
@@ -208,7 +212,9 @@ export const unequipItem = async (req, res) => {
   });
 
   if (!character || character.userId !== req.user.userId) {
-    return res.status(403).json({ error: "Unauthorized or Character not found" });
+    return res
+      .status(403)
+      .json({ error: "Unauthorized or Character not found" });
   }
 
   const itemEquipped = character.equippedItems.find(
