@@ -344,6 +344,57 @@
       }
       ```
 
+17. **공격력 랭킹 API**
+
+    - **Endpoint**: `GET /api/rank/pow`
+
+    - **Response**:
+      ```json
+      {
+        [
+          "name": "string",
+          "power": "int"
+        ],
+        [
+          // ...
+        ]
+      }
+      ```
+
+18. **체력 랭킹 API**
+
+    - **Endpoint**: `GET /api/rank/hp`
+
+    - **Response**:
+      ```json
+      {
+        [
+          "name": "string",
+          "health": "int"
+        ],
+        [
+          // ...
+        ]
+      }
+      ```
+
+19. **아이템 랭킹 API**
+
+    - **Endpoint**: `GET /api/rank/item`
+
+    - **Response**:
+      ```json
+      {
+        [
+          "charaName": "string",
+          "totlaCnt": "int"
+        ],
+        [
+          // ...
+        ]
+      }
+      ```
+
 
 # 질답
 
