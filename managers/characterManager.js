@@ -1,6 +1,6 @@
 // managers/characterManager.js
-import prisma from "../utils/prisma.js";
-import jwt from "jsonwebtoken";
+import prisma from '../utils/prisma.js';
+import jwt from 'jsonwebtoken';
 
 // 캐릭터 생성
 export const createCharacter = async (req, res) => {
@@ -11,7 +11,7 @@ export const createCharacter = async (req, res) => {
     where: { name },
   });
   if (existingCharacter) {
-    return res.status(409).json({ error: "Character name already taken" });
+    return res.status(409).json({ error: 'Character name already taken' });
   }
 
   const character = await prisma.character.create({
@@ -37,13 +37,11 @@ export const deleteCharacter = async (req, res) => {
   });
 
   if (!character || character.userId !== userId) {
-    return res
-      .status(403)
-      .json({ error: "Unauthorized or Character not found" });
+    return res.status(403).json({ error: 'Unauthorized or Character not found' });
   }
 
   await prisma.character.delete({ where: { id: parseInt(characterId) } });
-  res.status(200).json({ message: "Character deleted successfully" });
+  res.status(200).json({ message: 'Character deleted successfully' });
 };
 
 // 캐릭터 상세 조회
@@ -51,10 +49,10 @@ export const deleteCharacter = async (req, res) => {
 // 내 캐릭터일 시 돈까지 조회
 export const getCharacterDetails = async (req, res) => {
   const { characterId } = req.params;
-  const authHeader = req.headers["authorization"];
+  const authHeader = req.headers['authorization'];
   let currentUserId = -1;
 
-  if (!authHeader || authHeader.slice(0, 7) !== "Bearer ") currentUserId = -1;
+  if (!authHeader || authHeader.slice(0, 7) !== 'Bearer ') currentUserId = -1;
   else {
     const token = authHeader.slice(7);
     jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
@@ -75,7 +73,7 @@ export const getCharacterDetails = async (req, res) => {
   });
 
   if (!character) {
-    return res.status(404).json({ error: "Character not found" });
+    return res.status(404).json({ error: 'Character not found' });
   }
 
   // 현재 로그인한 유저와 캐릭터 소유자의 ID가 다른 경우 money 필드 제거
@@ -102,9 +100,7 @@ export const getInventory = async (req, res) => {
   });
 
   if (!character || character.userId !== currentUserId) {
-    return res
-      .status(403)
-      .json({ error: "Unauthorized or Character not found" });
+    return res.status(403).json({ error: 'Unauthorized or Character not found' });
   }
   delete character.userId;
   res.status(200).json(character);
@@ -124,7 +120,7 @@ export const getCurrentEquipment = async (req, res) => {
   });
 
   if (!character) {
-    return res.status(404).json({ error: "Character not found" });
+    return res.status(404).json({ error: 'Character not found' });
   }
 
   res.status(200).json(character);
@@ -144,16 +140,12 @@ export const equipItem = async (req, res) => {
   });
 
   if (!character || character.userId !== req.user.userId) {
-    return res
-      .status(403)
-      .json({ error: "Unauthorized or Character not found" });
+    return res.status(403).json({ error: 'Unauthorized or Character not found' });
   }
 
-  const itemInInventory = character.inventory.find(
-    (inv) => inv.itemId === itemCode
-  );
+  const itemInInventory = character.inventory.find((inv) => inv.itemId === itemCode);
   if (!itemInInventory) {
-    return res.status(404).json({ error: "Item not in inventory" });
+    return res.status(404).json({ error: 'Item not in inventory' });
   }
 
   const item = await prisma.item.findUnique({
@@ -161,7 +153,7 @@ export const equipItem = async (req, res) => {
   });
 
   if (!item) {
-    return res.status(404).json({ error: "Item not found" });
+    return res.status(404).json({ error: 'Item not found' });
   }
 
   await prisma.equippedItem.create({
@@ -195,7 +187,7 @@ export const equipItem = async (req, res) => {
     },
   });
 
-  res.status(200).json({ message: "Item equipped successfully" });
+  res.status(200).json({ message: 'Item equipped successfully' });
 };
 
 // 아이템 탈착
@@ -212,16 +204,12 @@ export const unequipItem = async (req, res) => {
   });
 
   if (!character || character.userId !== req.user.userId) {
-    return res
-      .status(403)
-      .json({ error: "Unauthorized or Character not found" });
+    return res.status(403).json({ error: 'Unauthorized or Character not found' });
   }
 
-  const itemEquipped = character.equippedItems.find(
-    (equip) => equip.itemId === itemCode
-  );
+  const itemEquipped = character.equippedItems.find((equip) => equip.itemId === itemCode);
   if (!itemEquipped) {
-    return res.status(404).json({ error: "Item not equipped" });
+    return res.status(404).json({ error: 'Item not equipped' });
   }
 
   // 아이템 장착 해제 처리
@@ -261,7 +249,7 @@ export const unequipItem = async (req, res) => {
   });
 
   if (!item) {
-    return res.status(404).json({ error: "Item not found" });
+    return res.status(404).json({ error: 'Item not found' });
   }
 
   const itemStats = item.itemStat;
@@ -276,7 +264,7 @@ export const unequipItem = async (req, res) => {
     },
   });
 
-  res.status(200).json({ message: "Item unequipped successfully" });
+  res.status(200).json({ message: 'Item unequipped successfully' });
 };
 
 // 캐릭터의 게임 머니를 증가시키는 함수
@@ -289,12 +277,12 @@ export const doMining = async (req, res) => {
   });
 
   if (!character) {
-    return res.status(404).json({ error: "Character not found" });
+    return res.status(404).json({ error: 'Character not found' });
   }
 
   // 캐릭터의 소유자(userId)와 현재 요청을 보낸 계정의 userId 비교
   if (character.userId !== currentUserId) {
-    return res.status(403).json({ error: "You do not own this character" });
+    return res.status(403).json({ error: 'You do not own this character' });
   }
 
   const updatedCharacter = await prisma.character.update({

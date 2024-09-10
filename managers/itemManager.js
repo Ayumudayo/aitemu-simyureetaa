@@ -1,17 +1,17 @@
 // managers/itemManager.js
-import prisma from "../utils/prisma.js";
+import prisma from '../utils/prisma.js';
 
 // 아이템 생성
 export const createItem = async (req, res) => {
   const { itemCode, itemName, itemStat, itemPrice } = req.body;
 
   if (!itemCode || !itemName || !itemStat || !itemPrice) {
-    return res.status(400).json({ error: "Check your input data" });
+    return res.status(400).json({ error: 'Check your input data' });
   }
 
   const existingItem = await prisma.item.findUnique({ where: { itemCode } });
   if (existingItem) {
-    return res.status(409).json({ error: "Item code already exists" });
+    return res.status(409).json({ error: 'Item code already exists' });
   }
 
   const item = await prisma.item.create({
@@ -53,7 +53,7 @@ export const getItemById = async (req, res) => {
   });
 
   if (!item) {
-    return res.status(404).json({ error: "Item not found" });
+    return res.status(404).json({ error: 'Item not found' });
   }
 
   res.status(200).json(item);
@@ -85,7 +85,7 @@ export const purchaseItem = async (req, res) => {
   });
 
   if (!character || character.userId !== req.user.userId) {
-    return res.status(403).json({ error: "Unauthorized or Character not found" });
+    return res.status(403).json({ error: 'Unauthorized or Character not found' });
   }
 
   let totalCost = 0;
@@ -103,7 +103,7 @@ export const purchaseItem = async (req, res) => {
       }
 
       if (character.money < totalCost) {
-        throw new Error("Not enough money");
+        throw new Error('Not enough money');
       }
 
       for (const item of itemsToPurchase) {
@@ -147,7 +147,7 @@ export const purchaseItem = async (req, res) => {
       });
     });
 
-    res.status(200).json({ message: "Items purchased successfully" });
+    res.status(200).json({ message: 'Items purchased successfully' });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
@@ -163,7 +163,7 @@ export const sellItem = async (req, res) => {
   });
 
   if (!character || character.userId !== req.user.userId) {
-    return res.status(403).json({ error: "Unauthorized or Character not found" });
+    return res.status(403).json({ error: 'Unauthorized or Character not found' });
   }
 
   let totalSellValue = 0;
@@ -186,7 +186,7 @@ export const sellItem = async (req, res) => {
         });
 
         if (!inventoryItem || inventoryItem.count < item.count) {
-          throw new Error("Not enough items to sell");
+          throw new Error('Not enough items to sell');
         }
 
         const sellValue = Math.floor(dbItem.itemPrice * 0.6) * item.count;
@@ -218,7 +218,7 @@ export const sellItem = async (req, res) => {
       });
     });
 
-    res.status(200).json({ message: "Items sold successfully" });
+    res.status(200).json({ message: 'Items sold successfully' });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
