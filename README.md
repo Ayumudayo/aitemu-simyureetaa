@@ -63,6 +63,7 @@
 
 ### 엔드포인트
 
+### 필수 기능
 1. **회원가입 API**
 
    - **Endpoint**: `POST /api/register`
@@ -102,7 +103,7 @@
      }
      ```
 
-3. **캐릭터 생성 API**
+3. **캐릭터 생성 API** (JWT 인증 필요)
 
    - **Endpoint**: `POST /api/characters`
    - **Request Body**:
@@ -119,7 +120,7 @@
      }
      ```
 
-4. **캐릭터 삭제 API**
+4. **캐릭터 삭제 API** (JWT 인증 필요)
 
    - **Endpoint**: `DELETE /api/characters/:id`
 
@@ -228,6 +229,7 @@
      }
      ```
 
+### 도전 기능
 10. **아이템 구매 API** (JWT 인증 필요)
 
     - **Endpoint**: `POST /api/characters/:id/purchase`
