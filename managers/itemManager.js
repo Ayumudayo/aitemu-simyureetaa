@@ -92,7 +92,8 @@ export const purchaseItem = async (req, res) => {
 
   try {
     await prisma.$transaction(async (prisma) => {
-      for (const item of itemsToPurchase) {
+      // 모든 아이템의 가격을 병렬로 계산
+      const costPromises = itemsToPurchase.map(async (item) => {
         const dbItem = await prisma.item.findUnique({
           where: { itemCode: item.itemCode },
         });
@@ -100,13 +101,17 @@ export const purchaseItem = async (req, res) => {
           throw new Error(`Item not found with code ${item.itemCode}`);
         }
         totalCost += dbItem.itemPrice * item.count;
-      }
+      });
+
+      // 모든 가격 계산을 병렬로 처리
+      await Promise.all(costPromises);
 
       if (character.money < totalCost) {
         throw new Error('Not enough money');
       }
 
-      for (const item of itemsToPurchase) {
+      // 아이템 구매 처리 병렬화
+      const purchasePromises = itemsToPurchase.map(async (item) => {
         const dbItem = await prisma.item.findUnique({
           where: { itemCode: item.itemCode },
         });
@@ -136,7 +141,10 @@ export const purchaseItem = async (req, res) => {
             },
           });
         }
-      }
+      });
+
+      // 모든 아이템 구매 처리 병렬로 실행
+      await Promise.all(purchasePromises);
 
       // 캐릭터의 게임 머니 감소 처리
       await prisma.character.update({
@@ -152,6 +160,7 @@ export const purchaseItem = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
+
 
 // 아이템 판매
 export const sellItem = async (req, res) => {
@@ -170,7 +179,7 @@ export const sellItem = async (req, res) => {
 
   try {
     await prisma.$transaction(async (prisma) => {
-      for (const item of itemsToSell) {
+      const promises = itemsToSell.map(async (item) => {
         const dbItem = await prisma.item.findUnique({
           where: { itemCode: item.itemCode },
         });
@@ -207,7 +216,10 @@ export const sellItem = async (req, res) => {
             },
           });
         }
-      }
+      });
+
+      // 모든 아이템 판매 Promise 병렬 실행
+      await Promise.all(promises);
 
       // 캐릭터의 게임 머니 증가 처리
       await prisma.character.update({
@@ -223,3 +235,4 @@ export const sellItem = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
+
